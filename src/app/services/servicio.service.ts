@@ -10,7 +10,7 @@ import { Listnoticias } from '../interfaces/Listnoticias';
 })
 export class ServicioService {
 
-  private readonly baseUrl = 'https://api.spaceflightnewsapi.net/v4/articles';
+  private readonly baseUrl = 'https://api.spaceflightnewsapi.net/v4/articles/';
 
   constructor(private http: HttpClient) { }
 

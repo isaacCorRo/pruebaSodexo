@@ -17,35 +17,42 @@ import { Listnoticias } from '../interfaces/Listnoticias';
 @Component({
   selector: 'app-inicio',
   styleUrls: ['./inicio.component.css'],
-  templateUrl: './inicio.component.html',
-  standalone: true,
-  imports: [MatTableModule, MatPaginatorModule],
+  templateUrl: './inicio.component.html'
 })
-export class InicioComponent implements OnInit{
+export class InicioComponent  implements AfterViewInit, OnInit{
   noticias: Noticia[] = [];
   listnoticias : Listnoticias | undefined;
   favoritas: any[] = [];
   noticiasFavoritas: any[] = [];
-  columnas: string[] = ['imagen', 'titulo', 'descripcion', 'fecha', 'favoritos'];
   favoritosDataSource: MatTableDataSource<any> = new MatTableDataSource<any>([]);
   columnasFavoritos: string[] = ['favorito_titulo', 'favorito_descripcion', 'favorito_fecha'];
+  displayedColumns: string[] = ['titulo', 'descripcion', 'publicado', 'actualizado'];
+  dataSource = new MatTableDataSource<Noticia>(this.noticias);
 
-
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
   constructor(private servicio:ServicioService) {}
 
 
   ngOnInit() {
     this.obtenernoticias();
   }
+
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+  }
+
   obtenernoticias(){
+    console.log('aqui se inicia el metodo')
     this.servicio.obtenernoticas().subscribe(
       {
         next:response => {
           this.listnoticias= response;
-          this.noticias=this.listnoticias.results
+          this.noticias = response.results
         }
       }
     )
+    console.log(JSON.stringify(this.noticias))
+    this.dataSource = new MatTableDataSource<Noticia>(this.noticias);
   }
 
 
