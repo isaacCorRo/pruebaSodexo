@@ -14,8 +14,8 @@ export class ServicioService {
 
   constructor(private http: HttpClient) { }
 
-  obtenernoticas():Observable<Listnoticias> {
-    return this.http.get<Listnoticias>(this.baseUrl)
+  obtenernoticas(url : string):Observable<Listnoticias> {
+    return this.http.get<Listnoticias>(url)
 
   }
 }

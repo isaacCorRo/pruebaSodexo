@@ -41,18 +41,55 @@ export class InicioComponent  implements AfterViewInit, OnInit{
     this.dataSource.paginator = this.paginator;
   }
 
-  obtenernoticias(){
-    console.log('aqui se inicia el metodo')
-    this.servicio.obtenernoticas().subscribe(
-      {
-        next:response => {
-          this.listnoticias= response;
-          this.noticias = response.results
+  // obtenernoticias(){
+
+  // this.servicio.obtenernoticas().subscribe({
+  //   next: (response: Listnoticias) => {
+  //     this.listnoticias = response;
+  //     this.noticias = response.results;
+  //     this.dataSource = new MatTableDataSource<Noticia>(this.noticias);
+  //     this.dataSource.paginator = this.paginator; // Configurar el paginador después de que se establezca la fuente de datos
+  //   },
+  //   error: (error) => {
+  //     console.error('Error al obtener noticias:', error);
+  //   }
+  // });
+  // }
+  obtenernoticias() {
+    this.obtenernoticiasnext('https://api.spaceflightnewsapi.net/v4/articles');
+  }
+
+  obtenernoticiasnext(url: string) {
+    console.log('Obteniendo noticias desde: ' + url);
+
+    this.servicio.obtenernoticas(url).subscribe({
+      next: (response: Listnoticias) => {
+        if (this.noticias.length === 0) {
+          // Si es la primera página, simplemente asignamos las noticias
+          this.noticias = response.results;
+          this.noticias = response.results;
+          this.dataSource.data = this.noticias; // Actualiza la fuente de datos de la tabla
+          this.dataSource.paginator = this.paginator;
+          console.log(this.noticias)
+        } else {
+          // Si no es la primera página, concatenamos las noticias
+          this.noticias = this.noticias.concat(response.results);
         }
+
+        // Comprobar si hay una página siguiente (next)
+        if (response.next) {
+          // Si hay una página siguiente, realiza una llamada recursiva
+          this.obtenernoticiasnext(response.next);
+        } else {
+          // Si no hay más páginas, actualiza la fuente de datos y el paginador
+          this.dataSource = new MatTableDataSource<Noticia>(this.noticias);
+          this.dataSource.paginator = this.paginator;
+        }
+      },
+      error: (error) => {
+        console.error('Error al obtener noticias:', error);
       }
-    )
-    console.log(JSON.stringify(this.noticias))
-    this.dataSource = new MatTableDataSource<Noticia>(this.noticias);
+    });
   }
 
 
