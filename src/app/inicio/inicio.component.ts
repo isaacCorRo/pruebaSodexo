@@ -26,10 +26,11 @@ export class InicioComponent  implements AfterViewInit, OnInit{
   noticiasFavoritas: any[] = [];
   favoritosDataSource: MatTableDataSource<any> = new MatTableDataSource<any>([]);
   columnasFavoritos: string[] = ['favorito_titulo', 'favorito_descripcion', 'favorito_fecha'];
-  displayedColumns: string[] = ['titulo', 'descripcion', 'publicado', 'actualizado'];
+  displayedColumns: string[] = ['titulo', 'descripcion', 'publicado', 'actualizado', 'boton'];
   dataSource = new MatTableDataSource<Noticia>(this.noticias);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  http: any;
   constructor(private servicio:ServicioService) {}
 
 
@@ -65,23 +66,19 @@ export class InicioComponent  implements AfterViewInit, OnInit{
     this.servicio.obtenernoticas(url).subscribe({
       next: (response: Listnoticias) => {
         if (this.noticias.length === 0) {
-          // Si es la primera página, simplemente asignamos las noticias
           this.noticias = response.results;
           this.noticias = response.results;
-          this.dataSource.data = this.noticias; // Actualiza la fuente de datos de la tabla
+          this.dataSource.data = this.noticias;
           this.dataSource.paginator = this.paginator;
           console.log(this.noticias)
         } else {
-          // Si no es la primera página, concatenamos las noticias
           this.noticias = this.noticias.concat(response.results);
         }
 
-        // Comprobar si hay una página siguiente (next)
+
         if (response.next) {
-          // Si hay una página siguiente, realiza una llamada recursiva
           this.obtenernoticiasnext(response.next);
         } else {
-          // Si no hay más páginas, actualiza la fuente de datos y el paginador
           this.dataSource = new MatTableDataSource<Noticia>(this.noticias);
           this.dataSource.paginator = this.paginator;
         }
@@ -91,7 +88,19 @@ export class InicioComponent  implements AfterViewInit, OnInit{
       }
     });
   }
+  agregarafavs(noticia: Noticia) {
+    console.log(noticia)
+    const apiUrl = 'http://localhost:8080/apiSodexo/guardar';
+    this.http.post(apiUrl, noticia).subscribe(
+      (response: any) => {
+        console.log('Noticia enviada con éxito', response);
+      },
+      (error: any) => {
+        console.error('Error al enviar la noticia', error);
 
+      }
+    );
+  }
 
 
 

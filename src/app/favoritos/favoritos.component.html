@@ -1,4 +1,4 @@
-<!--<div class="mat-elevation-z8">
+<div class="mat-elevation-z8">
   <table mat-table [dataSource]="dataSource">
 
 
@@ -24,6 +24,12 @@
       <th mat-header-cell *matHeaderCellDef> actualizado </th>
       <td mat-cell *matCellDef="let element"> {{element.updated_at}} </td>
     </ng-container>
+    <ng-container matColumnDef="boton">
+      <th mat-header-cell *matHeaderCellDef> Acción </th>
+      <td mat-cell *matCellDef="let noticia">
+        <button mat-button (click)="enviarid(noticia.id)">Mi Botón</button>
+      </td>
+    </ng-container>
 
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -35,4 +41,4 @@
                  aria-label="Select page of periodic elements">
   </mat-paginator>
 </div>
--->
+
