@@ -11,6 +11,8 @@ import { FavoritosComponent } from './favoritos/favoritos.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTableModule } from '@angular/material/table';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 
 @NgModule({
@@ -27,7 +29,10 @@ import { MatTableModule } from '@angular/material/table';
     MatPaginatorModule,
     MatButtonModule,
     MatMenuModule,
-    MatTableModule
+    MatTableModule,
+    BrowserAnimationsModule,
+    MatMenuModule,
+    MatFormFieldModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

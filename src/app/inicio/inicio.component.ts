@@ -1,5 +1,4 @@
 import { ServicioService } from './../services/servicio.service';
-import { HttpClient } from '@angular/common/http';
 import { MatTableDataSource } from '@angular/material/table';
 import { NgModule, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -22,10 +21,6 @@ import { Listnoticias } from '../interfaces/Listnoticias';
 export class InicioComponent  implements AfterViewInit, OnInit{
   noticias: Noticia[] = [];
   listnoticias : Listnoticias | undefined;
-  favoritas: any[] = [];
-  noticiasFavoritas: any[] = [];
-  favoritosDataSource: MatTableDataSource<any> = new MatTableDataSource<any>([]);
-  columnasFavoritos: string[] = ['favorito_titulo', 'favorito_descripcion', 'favorito_fecha'];
   displayedColumns: string[] = ['titulo', 'descripcion', 'publicado', 'actualizado', 'boton'];
   dataSource = new MatTableDataSource<Noticia>(this.noticias);
 
@@ -42,20 +37,7 @@ export class InicioComponent  implements AfterViewInit, OnInit{
     this.dataSource.paginator = this.paginator;
   }
 
-  // obtenernoticias(){
-
-  // this.servicio.obtenernoticas().subscribe({
-  //   next: (response: Listnoticias) => {
-  //     this.listnoticias = response;
-  //     this.noticias = response.results;
-  //     this.dataSource = new MatTableDataSource<Noticia>(this.noticias);
-  //     this.dataSource.paginator = this.paginator; // Configurar el paginador después de que se establezca la fuente de datos
-  //   },
-  //   error: (error) => {
-  //     console.error('Error al obtener noticias:', error);
-  //   }
-  // });
-  // }
+  
   obtenernoticias() {
     this.obtenernoticiasnext('https://api.spaceflightnewsapi.net/v4/articles');
   }
@@ -66,8 +48,7 @@ export class InicioComponent  implements AfterViewInit, OnInit{
     this.servicio.obtenernoticas(url).subscribe({
       next: (response: Listnoticias) => {
         if (this.noticias.length === 0) {
-          this.noticias = response.results;
-          this.noticias = response.results;
+          this.noticias = response.results;          
           this.dataSource.data = this.noticias;
           this.dataSource.paginator = this.paginator;
           console.log(this.noticias)
@@ -78,8 +59,9 @@ export class InicioComponent  implements AfterViewInit, OnInit{
 
         if (response.next) {
           this.obtenernoticiasnext(response.next);
-        } else {
           this.dataSource = new MatTableDataSource<Noticia>(this.noticias);
+          this.dataSource.paginator = this.paginator;
+        } else {          
           this.dataSource.paginator = this.paginator;
         }
       },
@@ -88,22 +70,38 @@ export class InicioComponent  implements AfterViewInit, OnInit{
       }
     });
   }
-  agregarafavs(noticia: Noticia) {
-    console.log(noticia)
-    const apiUrl = 'http://localhost:8080/apiSodexo/guardar';
-    this.http.post(apiUrl, noticia).subscribe(
-      (response: any) => {
-        console.log('Noticia enviada con éxito', response);
-      },
-      (error: any) => {
-        console.error('Error al enviar la noticia', error);
+  savefavs(noticia:Noticia):void{
+    
+    const fav: any = {
+      id: noticia.id,
+      title: noticia.title,
+      url: noticia.url,
+      imageurl: noticia.image_url,
+      news_site: noticia.news_site,
+      summary: noticia.summary,
+      publishedat: noticia.published_at,
+      updatedat: noticia.updated_at,
+      featured: noticia.featured,
+      launches: [],
+      events: []
+    }
+    console.log(fav);
+    this.servicio.savefav(fav).subscribe((result) => {
+      if(result){
+        console.log("favorite its saved", result);
 
+      }else{
+        console.log("error at trying to save",result);
       }
-    );
+    });
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.dataSource.filter = filterValue;
   }
 
 
 
-
-
+  
 }
